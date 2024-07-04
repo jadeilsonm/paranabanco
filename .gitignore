@@ -81,7 +81,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 
-# Visual Studo 2015 cache/options directory
+# Visual Studo
 .vs/
 *.vs
 
@@ -97,6 +97,10 @@ TestResult.xml
 [Dd]ebugPS/
 [Rr]eleasePS/
 dlldata.c
+
+# Rider
+.idea
+*.idea
 
 # DNX
 project.lock.json
