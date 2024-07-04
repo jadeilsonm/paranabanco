@@ -1,0 +1,9 @@
+@WebAPI_HostAddress = http://localhost:5102
+
+### Add a new customer
+POST {{WebAPI_HostAddress}}/api/v1.0/customers
+Content-Type: application/json
+
+{
+  
+}

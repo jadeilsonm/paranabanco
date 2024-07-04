@@ -3,8 +3,9 @@
     "",
     "\\src",
     "\\src\\Services",
-    "\\src\\Services\\CreditCard"
+    "\\src\\Services\\CreditCard",
+    "\\src\\Services\\Register"
   ],
-  "SelectedNode": "\\src\\Services\\CreditCard",
+  "SelectedNode": "\\src\\Services\\Register",
   "PreviewInSolutionExplorer": false
 }
