@@ -1,6 +1,13 @@
-﻿namespace Infrastructure;
+﻿using Core.Interfaces;
+using Infrastructure.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 
-public class ServiceCollectionExtensions
+namespace Infrastructure;
+
+public static class ServiceCollectionExtensions
 {
-    
+    public static void AddInfrastructureServices(this IServiceCollection services)
+    {
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+    }
 }

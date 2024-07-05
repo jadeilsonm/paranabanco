@@ -5,10 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class CustomerRepository : ICustomerRepository
+public class CustomerRepository(AppDbContext appDbContext) : ICustomerRepository
 {
-    private readonly AppDbContext appDbContext;
-    
+    private readonly AppDbContext appDbContext = appDbContext ?? throw new ArgumentNullException(nameof(appDbContext));
+
+    public Task<bool> IsExistCustomerWithEmail(string email)
+    {
+        return appDbContext.Customers.AnyAsync(x => x.Email == email);
+    }
+
     public async Task<IEnumerable<Customer>> GetAllAsync()
     {
         return await appDbContext.Customers.ToListAsync();
