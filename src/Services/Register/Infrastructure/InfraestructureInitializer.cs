@@ -1,10 +1,11 @@
-﻿using Infrastructure.Data;
+﻿using Core.Interfaces;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
 
-public class DatabaseInitializer
+public class InfraestructureInitializer
 {
     public static void Initialize(IServiceProvider serviceProvider)
     {
@@ -14,6 +15,9 @@ public class DatabaseInitializer
         {
             var context = services.GetRequiredService<AppDbContext>();
             context.Database.Migrate();
+            
+            var rabbitMqService = services.GetRequiredService<IRabbitMqService>();
+            rabbitMqService.CreateChannel();
         }
         catch (Exception ex)
         {

@@ -37,4 +37,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+InfraestructureInitializer.Initialize(app.Services);
+
 app.Run();
