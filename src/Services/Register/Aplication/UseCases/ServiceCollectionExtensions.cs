@@ -1,4 +1,7 @@
-﻿using Aplication.UseCases.Create;
+﻿
+using Aplication.UseCases.Create;
+using Aplication.UseCases.Producer;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Aplication.UseCases;
@@ -9,5 +12,8 @@ public static class ServiceCollectionExtensions
     {
         // Customer
         services.AddCustomerUseCases();
+
+        // Producer
+        services.AddProducer();
     }
 }
