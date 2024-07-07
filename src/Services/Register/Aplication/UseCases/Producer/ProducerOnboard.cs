@@ -12,10 +12,12 @@ public class ProducerOnboard(IRabbitMqService rabbitMqService) : IProducerOnboar
     
     private const string ExchangeName = "paranabanco-exchange";
     private const string RoutingKey = "onboarding-customer-key";
+
     public void Send(CustomerResponse message, CancellationToken cancellationToken = default)
     {
         using var connection = _rabbitMqService.CreateChannel();
         using var model = connection?.CreateModel();
+        
         string json = JsonSerializer.Serialize(message);
         var body = Encoding.UTF8.GetBytes(json);
         

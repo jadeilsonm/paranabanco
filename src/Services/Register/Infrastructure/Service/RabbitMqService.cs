@@ -13,6 +13,7 @@ public class RabbitMqService(IOptionsSnapshot<RabbitMqConfiguration> options) : 
     private const string ExchangeName = "paranabanco-exchange";
     private const string QueueName = "credit-onboarding-queue";
     private const string RoutingKey = "onboarding-customer-key";
+
     public IConnection? CreateChannel()
     {
         ConnectionFactory connection = new ConnectionFactory()
@@ -27,7 +28,6 @@ public class RabbitMqService(IOptionsSnapshot<RabbitMqConfiguration> options) : 
         CreateExchangeAndQueue();
         return _connection;
     }
-    
     
     private void CreateExchangeAndQueue()
     {
