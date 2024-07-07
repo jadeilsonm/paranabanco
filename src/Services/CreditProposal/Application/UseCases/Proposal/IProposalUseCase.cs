@@ -1,6 +1,8 @@
-﻿namespace Application.UseCases.Proposal;
+﻿using Application.DTOs;
 
-public class IProposalUseCase
+namespace Application.UseCases.Proposal;
+
+public interface IProposalUseCase
 {
-    
+    Task ExecuteAsync(OnboardingCustomeEvent onboardingConstomeEvent);
 }
