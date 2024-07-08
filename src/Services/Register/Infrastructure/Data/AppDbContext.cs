@@ -12,5 +12,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         // Customer configuration
         modelBuilder.Entity<Customer>()
             .HasKey(c => c.Id);
+
     }
 }

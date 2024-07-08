@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Application.UseCases.Validator;
 
-public class OnboardingValidate : AbstractValidator<OnboardingCustomeEvent>
+public class CreditCardValidator : AbstractValidator<CreditCardEvent>
 {
-    public OnboardingValidate()
+    public CreditCardValidator()
     {
         RuleFor(x => x.Email)
             .NotEmpty()
@@ -20,6 +20,9 @@ public class OnboardingValidate : AbstractValidator<OnboardingCustomeEvent>
         RuleFor(x => x.Document)
             .NotEmpty()
             .WithMessage("Document is required");
+        RuleFor(x => x.Address)
+            .NotEmpty()
+            .WithMessage("Address is required");
         RuleFor(x => x.Salary)
             .NotEmpty()
             .WithMessage("Salary is required");

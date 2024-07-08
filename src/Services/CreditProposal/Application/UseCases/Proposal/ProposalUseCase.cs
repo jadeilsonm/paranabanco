@@ -97,7 +97,7 @@ public class ProposalUseCase(ILogger<ProposalUseCase> logger, IValidator<Onboard
         {
             From = new Details() { Email = EmailDomain },
             To = new List<Details>() { new Details() { Email = onboardingConstomeEvent.Email }},
-            Subject = "Proposal",
+            Subject = "Proposal credit",
             Text = GenerateMsg(onboardingConstomeEvent)
         };
     }

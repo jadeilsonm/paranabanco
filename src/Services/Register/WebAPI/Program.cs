@@ -13,6 +13,17 @@ builder.Services.AddInfrastructureServices(config);
 // Injecting use cases
 builder.Services.AddUseCases();
 
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("AllowAllOrigins",
+               builder =>
+               {
+                   builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
+               });
+});
+
 // Add services to the container.
 builder.Services.AddControllers();
 
@@ -36,6 +47,9 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 InfraestructureInitializer.Initialize(app.Services);
 

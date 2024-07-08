@@ -37,10 +37,10 @@ public class CreateCustomer(IValidator<CustomerRequest> validator, ICustomerRepo
         
         await _customerRepository.AddCustomerAsync(customer);
 
-        CustomerResponse response = CustomerExtensions.MapToCustomerResponse(customer, request.Address);
+        CustomerResponse response = CustomerExtensions.MapToCustomerResponse(customer);
         
         _logger.LogInformation("Cliente criado com sucesso, enviando para a fila de onboarding");
-        _producerOnboard.Send(response, CancellationToken.None);
+        _producerOnboard.Send(CustomerExtensions.MapToCustomerEvent(customer), CancellationToken.None);
         
         return response;
     }

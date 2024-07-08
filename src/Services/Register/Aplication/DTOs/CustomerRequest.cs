@@ -7,6 +7,8 @@ public class CustomerRequest(
     string password,
     DateTime dateOfBirth,
     string document,
+    double salary,
+    double amountAll,
     Address address)
 {
     public string Name { get;  } = name;
@@ -16,6 +18,8 @@ public class CustomerRequest(
     public DateTime DateOfBirth { get;  } = dateOfBirth;
     public string Document { get;  } = document;
     public Address Address { get; set; } = address;
+    public double Salary { get; set; } = salary;
+    public double AmountAll { get; set; } = amountAll;
 }
 
 public class Address(string city, string state, string country, string zipCode)

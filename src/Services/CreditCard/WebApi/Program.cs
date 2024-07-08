@@ -1,7 +1,7 @@
 using Application;
 using Core.Interfaces;
 using Infrastructure;
-using WebApi.BackgroudService;
+using WebApi.BackgroundServices;
 using WebApi.Consumer;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,11 +17,9 @@ builder.Services.AddApplication();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen();
 
-
-builder.Services.AddSingleton<IOnboardingConsumer, OnboardingConsumer>();
+builder.Services.AddSingleton<ICreditCardConsumer, CreditConsumer>();
 
 builder.Services.AddHostedService<ConsumerHostedService>();
 
@@ -38,6 +36,4 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-
-
-app.Run("http://localhost:3000");
+app.Run();
