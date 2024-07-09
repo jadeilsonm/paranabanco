@@ -14,7 +14,7 @@ public class CreditConsumer : ICreditCardConsumer, IDisposable
     private readonly ICreditCardUseCase _useCase;
     private readonly ILogger<CreditConsumer> _logger;
     
-    private const string QueueName = "credit-onboarding-queue";
+    private const string QueueName = "credit-card-onboarding-queue";
     
     public CreditConsumer(IRabbitMqService rabbitMqService, ICreditCardUseCase useCase, ILogger<CreditConsumer> logger)
     {
@@ -23,7 +23,6 @@ public class CreditConsumer : ICreditCardConsumer, IDisposable
         _useCase = useCase;
         _logger = logger;
     }
-    
     
     public Task ReadeMessageAsync()
     {

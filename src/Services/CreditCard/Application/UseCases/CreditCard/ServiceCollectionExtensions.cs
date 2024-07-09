@@ -10,9 +10,9 @@ public static class ServiceCollectionExtensions
     public static void AddCreditCardUseCase(this IServiceCollection services)
     {
         // validato
-        services.AddTransient<IValidator<CreditCardEvent>, CreditCardValidator>();
+        services.AddSingleton<IValidator<CreditCardEvent>, CreditCardValidator>();
         
         // usecase
-        services.AddTransient<ICreditCardUseCase, CreditCardUseCase>();
+        services.AddSingleton<ICreditCardUseCase, CreditCardUseCase>();
     }
 }

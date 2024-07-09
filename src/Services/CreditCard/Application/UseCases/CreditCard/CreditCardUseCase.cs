@@ -7,15 +7,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.CreditCard;
 
-public class CreditCardUseCase(IValidator<CreditCardEvent> validator, ILogger<CreditCardEvent> logger, IMailerSendGateway mailerSendGateway)
+public class CreditCardUseCase(IValidator<CreditCardEvent> validator, ILogger<CreditCardEvent> logger, IMailerSendGateway mailerSendGateway, ICreditCardRepository repository)
     : ICreditCardUseCase
 {
     private readonly IValidator<CreditCardEvent> _validator = validator ?? throw new ArgumentNullException(nameof(validator));
     private readonly ILogger<CreditCardEvent> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IMailerSendGateway _mailerSendGateway = mailerSendGateway ?? throw new ArgumentNullException(nameof(mailerSendGateway));
-
+    private readonly ICreditCardRepository _creditCardRepository = repository ?? throw new ArgumentNullException(nameof(repository));
+    
     private const char Separator = ' ';
     private const string EmailDomain = "pb@trial-z3m5jgre66mldpyo.mlsender.net";
+    private double _limit = 0;
+    private string _password = string.Empty;
+    private string _creditCardNumber = string.Empty;
+    private string _expirationDate = string.Empty;
 
     public async Task ExecuteAsync(CreditCardEvent creditCardEvent)
     {
@@ -27,19 +32,29 @@ public class CreditCardUseCase(IValidator<CreditCardEvent> validator, ILogger<Cr
             throw new ValidationException("Validation error: {Errors}", validationResult.Errors);
         }
         
-        await SendEmailAsync(creditCardEvent);
+        SendEmailBody body = GetBody(creditCardEvent);
+
+        var creditCard = creditCardEvent.MapToCreditCard(_limit, _creditCardNumber, _password, _expirationDate);
+        
+        await SendEmailAsync(body);
+        
+        _ = await _creditCardRepository.AddCustomerAsync(creditCard);
     }
-    
-    private async Task SendEmailAsync(CreditCardEvent creditCardEvent)
+
+    private SendEmailBody GetBody(CreditCardEvent creditCardEvent)
     {
         var body = new SendEmailBody()
         {
             From = new Details() { Email = EmailDomain },
-            To = new List<Details>() { new Details() { Email = creditCardEvent.Email }},
+            To = new List<Details>() { new Details() { Email = creditCardEvent.Email } },
             Subject = "Credit Card",
             Text = GetMensage(creditCardEvent)
         };
-        
+        return body;
+    }
+
+    private async Task SendEmailAsync(SendEmailBody body)
+    {
         await _mailerSendGateway.SendMailAsync(body);
     }
     
@@ -60,7 +75,8 @@ public class CreditCardUseCase(IValidator<CreditCardEvent> validator, ILogger<Cr
             }
             creditCardNumber.Append(random.Next(0, 9));
         }
-        return creditCardNumber.ToString();
+        _creditCardNumber = creditCardNumber.ToString();
+        return _creditCardNumber;
     }
     
     private string GetCreditCardPassword()
@@ -71,19 +87,22 @@ public class CreditCardUseCase(IValidator<CreditCardEvent> validator, ILogger<Cr
         {
             password.Append(random.Next(0, 9));
         }
-        return password.ToString();
+        _password = password.ToString();
+        return _password;
     }
     
     private string GetCreditCardExpirationDate()
     {
         var date = DateTime.Now;
         date = date.AddYears(5);
-        return date.ToString("MM/yyyy");
+        _expirationDate = date.ToString("MM/yyyy");
+        return _expirationDate;
     }
     
     private double GetCreditCardLimit(Double salary)
     {
         Random random = new Random();
-        return salary * random.Next(10, 100);
+        _limit = salary * random.Next(10, 100);
+        return _limit;
     }
 }
