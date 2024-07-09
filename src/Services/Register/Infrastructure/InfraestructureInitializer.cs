@@ -19,6 +19,7 @@ public class InfraestructureInitializer
             Console.WriteLine("Database migrated successfully.");
             var rabbitMqService = services.GetRequiredService<IRabbitMqService>();
             rabbitMqService.CreateChannel();
+            Console.WriteLine("Finish initialize");
         }
         catch (Exception ex)
         {

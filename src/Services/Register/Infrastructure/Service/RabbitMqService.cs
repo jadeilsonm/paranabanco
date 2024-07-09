@@ -11,8 +11,7 @@ public class RabbitMqService(IOptionsSnapshot<RabbitMqConfiguration> options) : 
     private IConnection? _connection;
     
     private const string ExchangeName = "paranabanco-exchange";
-    private const string QueueName = "credit-onboarding-queue";
-    private const string RoutingKey = "onboarding-customer-key";
+    private List<string> QueueName = new List<string>() { "credit-onboarding-queue", "credit-card-onboarding-queue" };
 
     public IConnection? CreateChannel()
     {
@@ -35,8 +34,12 @@ public class RabbitMqService(IOptionsSnapshot<RabbitMqConfiguration> options) : 
         if (channel == null) 
             return;
         
-        channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct, true);
-        channel.QueueDeclare(QueueName, true, false, false, null);
-        channel.QueueBind(QueueName, ExchangeName, RoutingKey);
+        channel.ExchangeDeclare(ExchangeName, ExchangeType.Fanout);
+        QueueName.ForEach(x =>
+        {
+            channel.QueueDeclare(x, true, false, false, null);
+            channel.QueueBind(x, ExchangeName, string.Empty);
+            Console.WriteLine($"Queue {x} initialization");
+        });
     }
 }

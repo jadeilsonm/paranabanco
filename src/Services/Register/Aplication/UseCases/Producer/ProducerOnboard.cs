@@ -11,7 +11,6 @@ public class ProducerOnboard(IRabbitMqService rabbitMqService) : IProducerOnboar
     private readonly IRabbitMqService _rabbitMqService = rabbitMqService ?? throw new ArgumentNullException(nameof(rabbitMqService));
     
     private const string ExchangeName = "paranabanco-exchange";
-    private const string RoutingKey = "onboarding-customer-key";
 
     public void Send(CustomerEvent message, CancellationToken cancellationToken = default)
     {
@@ -25,7 +24,7 @@ public class ProducerOnboard(IRabbitMqService rabbitMqService) : IProducerOnboar
         basicProperties!.CorrelationId = message.Id.ToString();
         
         model.BasicPublish(ExchangeName,
-            RoutingKey,
+            string.Empty,
             basicProperties: basicProperties,
             body: body);
         
