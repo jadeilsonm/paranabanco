@@ -32,9 +32,7 @@ public class OnboardingConsumer : IOnboardingConsumer, IDisposable
         
         var maxRetryAttempts = 3;
         var retryDelay = TimeSpan.FromSeconds(5);
-
-      
-
+        
         consumer.Received += async (model, eventArgs) =>
         {
             var body = eventArgs.Body.ToArray();

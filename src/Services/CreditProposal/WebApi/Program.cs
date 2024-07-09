@@ -1,12 +1,19 @@
 using Application;
 using Core.Interfaces;
 using Infrastructure;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using WebApi.BackgroudService;
 using WebApi.Consumer;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var config = builder.Configuration;
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    options.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+}, ServiceLifetime.Singleton);
 
 // Add services to the container.
 builder.Services.AddInfrastucture(config);

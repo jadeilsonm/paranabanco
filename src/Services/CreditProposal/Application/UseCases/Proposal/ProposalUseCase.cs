@@ -5,12 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.Proposal;
 
-public class ProposalUseCase(ILogger<ProposalUseCase> logger, IValidator<OnboardingCustomeEvent> validator, IMailerSendGateway mailerSendGateway)
+public class ProposalUseCase(ILogger<ProposalUseCase> logger, IValidator<OnboardingCustomeEvent> validator, IMailerSendGateway mailerSendGateway, ICreditProposalRepository repository)
     : IProposalUseCase
 {
     private readonly ILogger<ProposalUseCase> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IValidator<OnboardingCustomeEvent> _validator = validator ?? throw new ArgumentNullException(nameof(validator));
+    private readonly ICreditProposalRepository creditProposalRepository = repository ?? throw new ArgumentNullException(nameof(repository));
+    
     private const string EmailDomain = "pb@trial-z3m5jgre66mldpyo.mlsender.net";
+    private double ProposalValue = 0;
 
     public async Task ExecuteAsync(OnboardingCustomeEvent onboardingConstomeEvent)
     {
@@ -24,6 +27,11 @@ public class ProposalUseCase(ILogger<ProposalUseCase> logger, IValidator<Onboard
         }
         
         await SendEmailAsync(onboardingConstomeEvent);
+        
+        var creditProposal = CreditProposalExtensions.MapToCreditProposal(onboardingConstomeEvent, ProposalValue);
+        
+        await creditProposalRepository.AddCustomerAsync(creditProposal);
+        
         _logger.LogInformation("Finished UseCase {UseCase}", nameof(ProposalUseCase));
     }
     
@@ -65,7 +73,8 @@ public class ProposalUseCase(ILogger<ProposalUseCase> logger, IValidator<Onboard
         {
             amountAll *= 1.5;
         }
-        return amount + amountAll;
+        ProposalValue = amount + amountAll;
+        return ProposalValue;
     }
     
     private string GenerateMsg(OnboardingCustomeEvent onboardingConstomeEvent)

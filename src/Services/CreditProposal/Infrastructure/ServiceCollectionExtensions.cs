@@ -1,5 +1,6 @@
 ﻿using Core.Configurations;
 using Core.Interfaces;
+using Infrastructure.Repositories;
 using Infrastructure.Services;
 using Infrastructure.Services.RabbitMq;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,8 @@ public static class ServiceCollectionExtensions
 {
     public static void AddInfrastucture(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<ICreditProposalRepository, CreditProposalRepositoryRepository>();
+        
         services.Configure<RabbitMqConfiguration>(opt => 
             configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(opt));
         

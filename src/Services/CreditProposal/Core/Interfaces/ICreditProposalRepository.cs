@@ -2,7 +2,7 @@
 
 namespace Core.Interfaces;
 
-public interface ICreditProposal
+public interface ICreditProposalRepository
 {
     Task<CreditProposal?> GetByIdAsync(Guid id);
     Task<IEnumerable<CreditProposal>> GetAllAsync();
