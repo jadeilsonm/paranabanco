@@ -7,7 +7,11 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["WebApi/WebApi.csproj", "WebApi/"]
+COPY ["./WebApi.csproj", "WebApi/"]
+COPY ["../Infraestructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["../Core/Core.csproj", "Core/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["*.props", "./"]
 RUN dotnet restore "WebApi/WebApi.csproj"
 COPY . .
 WORKDIR "/src/WebApi"
