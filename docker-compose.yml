@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "Pass@word"
+      ACCEPT_EULA: "Y"
+  mssqltools:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./init.sql:/tmp/init.sql
+      - ./init.sh:/tmp/init.sh
+    command: /bin/bash ./tmp/init.sh
+  webapi:
+    image: webapi
+    build:
+      context: .
+      dockerfile: src/services/Register/WebApi/Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User=sa;Password=Pass@word"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Username: "guest"
+      RabbitMQ__Password: "guest"
+  consumer1:
+    image: creditproposalconsumer
+    build:
+      context: ./src/services/CreditProposal/WebApi
+      dockerfile: Dockerfile
+    depends_on:
+      - webapi
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User=sa;Password=Pass@word"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Username: "guest"
+      RabbitMQ__Password: "guest"
+  consumer2:
+    image: creditcardconsumer
+    build:
+      context: ./src/services/creditCard/WebApi
+      dockerfile: Dockerfile
+    depends_on:
+      - webapi
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User=sa;Password=Pass@word"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Username: "guest"
+      RabbitMQ__Password: "guest"
