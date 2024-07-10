@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var config = builder.Configuration;
 
+
 // Injecting services
 builder.Services.AddInfrastructureServices(config);
 
@@ -27,13 +28,12 @@ builder.Services.AddCors(opt =>
 // Add services to the container.
 builder.Services.AddControllers();
 
+builder.Services.AddDbContext<AppDbContext>(op =>
+    op.UseSqlServer(config.GetConnectionString("DefaultConnection")));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
-builder.Services.AddDbContext<AppDbContext>(op =>
-    op.UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -44,6 +44,7 @@ app.MapControllers();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
 
 InfraestructureInitializer.Initialize(app.Services);
 

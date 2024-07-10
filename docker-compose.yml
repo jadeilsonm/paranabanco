@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   rabbitmq:
     image: rabbitmq:3-management
@@ -8,6 +7,9 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
+    networks:
+      pb-network:
+
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
     ports:
@@ -15,6 +17,10 @@ services:
     environment:
       SA_PASSWORD: "Pass@word"
       ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    networks:
+      pb-network:
+      
   mssqltools:
     image: mcr.microsoft.com/mssql-tools
     depends_on:
@@ -23,42 +29,64 @@ services:
       - ./init.sql:/tmp/init.sql
       - ./init.sh:/tmp/init.sh
     command: /bin/bash ./tmp/init.sh
+    networks:
+      pb-network:
+  
   webapi:
-    image: webapi
+    container_name: webapi
     build:
       context: .
       dockerfile: src/services/Register/WebApi/Dockerfile
     ports:
-      - "5000:80"
+      - "5000:8080"
+      - "5001:8081"
     depends_on:
       - sqlserver
       - rabbitmq
     environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User=sa;Password=Pass@word"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User Id=sa;Password=Pass@word;MultipleActiveResultSets=True;TrustServerCertificate=True;"
       RabbitMQ__Host: "rabbitmq"
       RabbitMQ__Username: "guest"
       RabbitMQ__Password: "guest"
+    networks:
+      pb-network:
+
   consumer1:
-    image: creditproposalconsumer
     build:
-      context: ./src/services/CreditProposal/WebApi
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: /src/services/CreditProposal/WebApi/Dockerfile
     depends_on:
       - webapi
+    ports:
+      - "5002:8080"
+      - "5003:8081"
     environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User=sa;Password=Pass@word"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User Id=sa;Password=Pass@word;MultipleActiveResultSets=True;TrustServerCertificate=True;"
       RabbitMQ__Host: "rabbitmq"
       RabbitMQ__Username: "guest"
       RabbitMQ__Password: "guest"
+    networks:
+      pb-network:
+    
   consumer2:
-    image: creditcardconsumer
     build:
-      context: ./src/services/creditCard/WebApi
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: /src/services/creditCard/WebApi/Dockerfile
     depends_on:
       - webapi
+    ports:
+      - "5004:8080"
+      - "5005:8081"
     environment:
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User=sa;Password=Pass@word"
-      RabbitMQ__Host: "rabbitmq"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=paranabanco;User Id=sa;Password=Pass@word;MultipleActiveResultSets=True;TrustServerCertificate=True;"
+      RabbitMQ__my-network: "rabbitmq"
       RabbitMQ__Username: "guest"
       RabbitMQ__Password: "guest"
+    networks:
+      pb-network:
+
+networks:
+  pb-network:
+    driver: bridge
+      

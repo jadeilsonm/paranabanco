@@ -15,8 +15,8 @@ public class InfraestructureInitializer
         {
             var context = services.GetRequiredService<AppDbContext>();
             context.Database.Migrate();
-            
             Console.WriteLine("Database migrated successfully.");
+
             var rabbitMqService = services.GetRequiredService<IRabbitMqService>();
             rabbitMqService.CreateChannel();
             Console.WriteLine("Finish initialize");

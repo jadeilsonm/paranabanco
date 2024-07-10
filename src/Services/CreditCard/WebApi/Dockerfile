@@ -7,20 +7,20 @@ EXPOSE 8085
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY src/Services/CreditCard/WebAPI ./WebApi
+COPY src/Services/CreditCard/WebApi ./WebApi
 COPY src/Services/CreditCard/Core ./Core
-COPY src/Services/CreditCard/Aplication ./Aplication
+COPY src/Services/CreditCard/Application ./Application
 COPY src/Services/CreditCard/Infrastructure ./Infrastructure
-RUN dotnet restore "WebApi/WebAPI.csproj"
+RUN dotnet restore "WebApi/WebApi.csproj"
 WORKDIR "/src/WebApi"
 
-RUN dotnet build "WebAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "./WebAPI.csproj" -c Release -o /app/publish
+RUN dotnet publish "./WebApi.csproj" -c Release -o /app/publish
 ARG BUILD_CONFIGURATION=Release
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WebAPI.dll"]
+ENTRYPOINT ["dotnet", "WebApi.dll"]
