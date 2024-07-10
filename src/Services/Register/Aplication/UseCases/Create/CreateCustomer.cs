@@ -1,5 +1,6 @@
 ﻿using Aplication.DTOs;
 using Aplication.UseCases.Producer;
+using Core.Exceptions;
 using Core.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ public class CreateCustomer(IValidator<CustomerRequest> validator, ICustomerRepo
         if (!validationResult.IsValid)
         {
             _logger.LogError("Erro de validação ao criar um novo cliente, {@error}", validationResult.Errors);
-            throw new ValidationException(validationResult.Errors);
+            throw new DataContractValidationException("Invalid customer data when creating", validationResult.Errors);
         }
         
         Boolean isExistCustomer = await _customerRepository.IsExistCustomerWithEmail(request.Email);
