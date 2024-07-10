@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Application.DTOs;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,7 @@ public class CreditCardUseCase(IValidator<CreditCardEvent> validator, ILogger<Cr
         if (!validationResult.IsValid)
         {
             _logger.LogError("Validation error: {Errors}", validationResult.Errors);
-            throw new ValidationException("Validation error: {Errors}", validationResult.Errors);
+            throw new DataContractValidationException("Validation error: {Errors}", validationResult.Errors);
         }
         
         SendEmailBody body = GetBody(creditCardEvent);
