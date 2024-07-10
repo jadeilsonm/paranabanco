@@ -1,5 +1,6 @@
 ﻿using Aplication.DTOs;
 using Aplication.UseCases.Producer;
+using Core.Entities;
 using Core.Exceptions;
 using Core.Interfaces;
 using FluentValidation;
@@ -7,13 +8,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Aplication.UseCases.Create;
 
-public class CreateCustomer(IValidator<CustomerRequest> validator, ICustomerRepository customerRepository, IProducerOnboard producerOnboard, ILogger<CreateCustomer> logger)
+public class CreateCustomer(IValidator<CustomerRequest> validator, ICustomerRepository customerRepository, IProducerOnboard producerOnboard, ILogger<CreateCustomer> logger, IMailerSendGateway mailerSendGateway)
     : ICreateCustomer
 {
     private readonly IValidator<CustomerRequest> _validator = validator ?? throw new ArgumentNullException(nameof(validator));
     private readonly ICustomerRepository _customerRepository = customerRepository ?? throw new ArgumentNullException(nameof(customerRepository));
     private readonly IProducerOnboard _producerOnboard = producerOnboard ?? throw new ArgumentNullException(nameof(producerOnboard));
     private readonly ILogger<CreateCustomer> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IMailerSendGateway _mailerSendGateway = mailerSendGateway ?? throw new ArgumentNullException(nameof(mailerSendGateway));
+    
+    private const string EmailDomain = "pb@trial-z3m5jgre66mldpyo.mlsender.net";
 
     public async Task<CustomerResponse> ExecuteAsync(CustomerRequest request)
     {
@@ -43,6 +47,26 @@ public class CreateCustomer(IValidator<CustomerRequest> validator, ICustomerRepo
         _logger.LogInformation("Cliente criado com sucesso, enviando para a fila de onboarding");
         _producerOnboard.Send(CustomerExtensions.MapToCustomerEvent(customer), CancellationToken.None);
         
+        _logger.LogInformation("Enviando email de boas-vindas para o cliente");
+        await SendWelcomeEmail(customer);
+        
         return response;
+    }
+    
+    private SendEmailBody GenerateEmailBody(Customer customer)
+    {
+        return new SendEmailBody()
+        {
+            From = new Details() { Email = EmailDomain },
+            To = new List<Details>() { new() { Email = customer.Email } },
+            Subject = "Bem-vindo ao nosso sistema",
+            Text = $"Olá {customer.Name}, seja bem-vindo ao nosso sistema"
+        };
+    }
+    
+    private Task SendWelcomeEmail(Customer customer)
+    {
+        SendEmailBody body = GenerateEmailBody(customer);
+        return _mailerSendGateway.SendMailAsync(body);
     }
 }

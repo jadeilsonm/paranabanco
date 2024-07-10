@@ -3,6 +3,7 @@ using Core.Configurations;
 using Core.Interfaces;
 using Infrastructure.Repositories;
 using Infrastructure.Service;
+using Infrastructure.Service.Gateway;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,5 +19,10 @@ public static class ServiceCollectionExtensions
             configuration.GetSection(nameof(RabbitMqConfiguration)).Bind(opt));
         
         services.AddScoped<IRabbitMqService, RabbitMqService>();
+        
+        services.Configure<MailerSendAPIConfiguration>(opt => 
+            configuration.GetSection(nameof(MailerSendAPIConfiguration)).Bind(opt));
+        
+        services.AddSingleton<IMailerSendGateway, MailerSendGateway>();
     }
 }
