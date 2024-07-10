@@ -11,5 +11,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     {
         modelBuilder.Entity<CreditCard>()
             .HasKey(x => x.Id);
+        
+        modelBuilder.Entity<CreditCard>()
+            .Property(x => x.Id)
+            .HasConversion(x => x.ToString(), x => Guid.Parse(x));
+        
+        modelBuilder.Entity<CreditCard>()
+            .Property(x => x.CustomerId)
+            .HasConversion(x => x.ToString(), x => Guid.Parse(x));
     }
 }
