@@ -1,32 +1,66 @@
+using Application.UseCases;
+using Application.UseCases.GetByIdProposal;
+using Core.Entities;
+using Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class CreditPoposalController : ControllerBase
-{
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+[Route("api/[controller]")]
+public class CreditPoposalController(
+    ILogger<CreditPoposalController> logger,
+    IGetAllProposalUseCase getAllProposalUseCase,
+    IGetByIdProposalUseCase getByIdProposalUseCase)
+    : ControllerBase
+{   
+    private readonly ILogger<CreditPoposalController> _logger = logger;
+    private IGetAllProposalUseCase _getAllProposalUseCase = getAllProposalUseCase;
+    private IGetByIdProposalUseCase _getByIdProposalUseCase = getByIdProposalUseCase;
 
-    private readonly ILogger<CreditPoposalController> _logger;
-
-    public CreditPoposalController(ILogger<CreditPoposalController> logger)
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<CreditProposal>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllCustomers()
     {
-        _logger = logger;
+        try
+        {
+            var customersOutput = await _getAllProposalUseCase.ExecuteAsync();
+            return Ok(customersOutput);
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = e.Message });
+        }
     }
-
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+    
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(CreditProposal), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetbyIdCustomers(Guid id)
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+        try
+        {
+            var customersOutput = await _getByIdProposalUseCase.ExecuteAsync(id);
+            return Ok(customersOutput);
+        }
+        catch (BadRequestException e)
+        {
+            return BadRequest(new { message = e.Message });
+        }
+        catch (NotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, new { message = e.Message });
+        }
     }
 }

@@ -1,6 +1,11 @@
-﻿namespace Application.UseCases.GetByIdProposal;
+﻿using Microsoft.Extensions.DependencyInjection;
 
-public class ServiceCollectionExtensions
+namespace Application.UseCases.GetByIdProposal;
+
+public static class ServiceCollectionExtensions
 {
-    
+    public static void AddGetByIdProposal(this IServiceCollection services)
+    {
+        services.AddScoped<IGetByIdProposalUseCase, GetByIdProposalUseCase>();
+    }
 }

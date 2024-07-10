@@ -2,7 +2,7 @@
 
 namespace Application.UseCases.GetByIdProposal;
 
-public interface IGetByIdProposal
+public interface IGetByIdProposalUseCase
 {
     Task<CreditProposal> ExecuteAsync(Guid id);
 }

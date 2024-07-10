@@ -5,10 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.GetByIdProposal;
 
-public class GetByIdProposalUseCaseUseCase(ILogger<GetByIdProposalUseCaseUseCase> logger, ICreditProposalRepository creditProposalRepository)
+public class GetByIdProposalUseCase(ILogger<GetByIdProposalUseCase> logger, ICreditProposalRepository creditProposalRepository)
     : IGetByIdProposalUseCase
 {
-    private readonly ILogger<GetByIdProposalUseCaseUseCase> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ILogger<GetByIdProposalUseCase> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly ICreditProposalRepository _creditProposalRepository = creditProposalRepository ??
                                                                            throw new ArgumentNullException(nameof(creditProposalRepository));
 
@@ -29,7 +29,7 @@ public class GetByIdProposalUseCaseUseCase(ILogger<GetByIdProposalUseCaseUseCase
             throw new NotFoundException("Proposal not found");
         }
         
-        _logger.LogInformation("Finished UseCase {UseCase}", nameof(GetByIdProposalUseCaseUseCase));
+        _logger.LogInformation("Finished UseCase {UseCase}", nameof(GetByIdProposalUseCase));
         return result;
 
     }

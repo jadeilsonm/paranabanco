@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Core.Exceptions;
 using Core.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ public class ProposalUseCase(ILogger<ProposalUseCase> logger, IValidator<Onboard
         if (!validationResult.IsValid)
         {
             _logger.LogError("Validation failed {@Errors}", validationResult.Errors);
-            throw new ValidationException(validationResult.Errors);
+            throw new DataContractValidationException("Validate failed",validationResult.Errors);
         }
         
         await SendEmailAsync(onboardingConstomeEvent);
